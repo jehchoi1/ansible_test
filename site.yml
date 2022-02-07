@@ -1,0 +1,47 @@
+---
+# 
+- hosts: all
+  become: true
+  pre_tasks:
+
+  - name: update repo cache (Debian, Ubuntu)
+    tags: always
+    apt:
+      update_cache: yes
+    changed_when: fales
+    when: ansible_distribution in ["Debian", "Ubuntu"]
+    #when: ansible_distribution == "Ubuntu"
+    #Any variables found in Anisble Gather Facts can be used with when statement
+    #when: ansible_distribution == "Ubuntu" and ansible_distribution_version == "11"
+
+  - name: update repo cache (CentOS)
+    tags: always
+    dnf:
+      update_cache: yes
+    changed_when: fales
+    when: ansible_distribution == "CentOS"
+#
+# This is a place holder for SSH Key to add/delete keys in the future
+- hosts: all
+  become: true
+  tasks:
+  - name: add ssh key for simone
+    tags: always
+    authorized_keys:
+      user: simone
+      key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOklTk2Wb28K/9orNa7Cqj5kQjoWDFgjpz9YoQ42kRyv ansible"
+#
+# Run plays only for web_servers Hosts
+- hosts: web_servers
+  become: true
+  tasks:
+
+  # Using variables declared in the inventory file
+  - name: install apache package php
+    package:
+      name: 
+        - "{{ apache_package }}"
+        - "{{ php_package }}"
+      state: latest
+      update_cache: yes
+

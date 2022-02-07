@@ -1,0 +1,55 @@
+---
+# YouTube - LearnLinuxTV Lesson # 11
+# This is an example of file management example
+# [Play] Update all Hosts
+- hosts: all
+  become: true
+  pre_tasks: # pre_tasks guarantees task below is ran before anything else
+
+  - name: Install updates (Debian, Ubuntu)
+    tags: always
+    apt:
+      upgrade: dist
+      update_cache: yes
+    when: ansible_distribution in ["Debian", "Ubuntu"]
+
+  - name: Install update (CentOS)
+    tags: always
+    dnf:
+      update_only: yes
+      update_cache: yes
+    when: ansible_distribution == "CentOS"
+#
+# [Play] Run play only for web_servers Hosts
+- hosts: web_servers
+  become: true
+  tasks:
+
+  - name: copy default html file for site
+    tags: apache,apache2,httpd
+    copy:
+      src: default_site.html
+      dest: /var/www/html/index.html
+      owner: root
+      group: root
+      mode: 0644
+#
+# [Play] Install App using unzip
+- hosts: workstations
+  become: true
+  tasks:
+
+  - name: install unzip
+    package:
+      name: unzip
+
+  - name: install terraform
+    unarchive:
+      src: https://releases.hashicorp.com/terraform/0.12.28/terraform_0.12.28_linux_amd64.zip
+      dest: /usr/local/bin
+      remote_src: yes
+      mode: 0755
+      owner: root
+      group: root
+      
+

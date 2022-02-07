@@ -1,0 +1,60 @@
+---
+# YouTube - LearnLinuxTV Lesson # 12
+# Managing Services
+# [Play] Update all Hosts
+- hosts: all
+  become: true
+  pre_tasks: # pre_tasks guarantees task below is ran before anything else
+
+  - name: Install updates (Debian, Ubuntu)
+    tags: always
+    apt:
+      upgrade: dist
+      update_cache: yes
+    when: ansible_distribution in ["Debian", "Ubuntu"]
+
+  - name: Install update (CentOS)
+    tags: always
+    dnf:
+      update_only: yes
+      update_cache: yes
+    when: ansible_distribution == "CentOS"
+#
+# [Play] Run play only for web_servers Hosts
+- hosts: web_servers
+  become: true
+  tasks:
+
+  - name: Install apache and php for CentOS web_servers
+    tags: apache,centos,httpd
+    dnf:
+      name:
+        - httpd
+        - php
+      state: latest
+    when: ansible_distribution == "CentOS"
+  
+  - name: Start httpd (CentOS)
+    tags: apache,centos,httpd
+    service:
+      name: httpd
+      state: started
+      enabled: yes
+    when: ansible_distribution == "CentOS"
+
+  - name: Change e-mail address for admin in Apache Config file
+    tags: apache,centos,httpd
+    lineinfile:
+      path: /etc/httpd/conf/httpd.conf
+      regexp: '^ServerAdmin' # Find line with this string in the file
+      line: ServerAdmin somebody@somewhere.net # replace the line with this
+    when: ansible_distribution == "CentOS"
+    register: httpd
+
+  - name: restart httpd (CentOS)
+    tags: apache,centos,httpd
+    service:
+      name: httpd
+      state: restarted
+    when: httpd.changed
+
