@@ -1,0 +1,16 @@
+# Task Book
+# This is a place holder for SSH Key to add/delete keys in the future
+- name: add ssh key for simone
+  authorized_key:
+    user: simone
+    key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOklTk2Wb28K/9orNa7Cqj5kQjoWDFgjpz9YoQ42kRyv ansible"
+
+- name: generate sshd_config file from template
+  tags: ssh
+  template:
+    src: "{{ ssh_template_file }}"
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart_sshd

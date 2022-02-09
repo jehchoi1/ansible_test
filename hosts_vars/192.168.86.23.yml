@@ -1,0 +1,6 @@
+# List of variables for the Host 192.168.86.23
+apache_package_name: httpd
+apache_service: httpd
+php_package_name: php
+ssh_users: "james simone"
+ssh_template_file: sshd_config_ubuntu.j2

@@ -27,21 +27,6 @@
   tasks:
   - name: add ssh key for simone
     tags: always
-    authorized_keys:
+    authorized_key:
       user: simone
       key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOklTk2Wb28K/9orNa7Cqj5kQjoWDFgjpz9YoQ42kRyv ansible"
-#
-# Run plays only for web_servers Hosts
-- hosts: web_servers
-  become: true
-  tasks:
-
-  # Using variables declared in the inventory file
-  - name: install apache package php
-    package:
-      name: 
-        - "{{ apache_package }}"
-        - "{{ php_package }}"
-      state: latest
-      update_cache: yes
-

@@ -1,0 +1,44 @@
+---
+# 
+- hosts: all
+  become: true
+  pre_tasks:
+
+  - name: update repo cache (Debian, Ubuntu)
+    tags: always
+    apt:
+      update_cache: yes
+    changed_when: fales
+    when: ansible_distribution in ["Debian", "Ubuntu"]
+
+  - name: update repo cache (CentOS)
+    tags: always
+    dnf:
+      update_cache: yes
+    changed_when: fales
+    when: ansible_distribution == "CentOS"
+#
+#
+- hosts: all
+  become: true
+  roles:
+    - base
+
+- hosts: workstations
+  become: true
+  roles:
+    - workstations
+
+- hosts: web_servers
+  become: true
+  roles:
+    - web_servers
+
+- hosts: db_servers
+  become: true
+    - db_servers
+
+- hosts: file_servers
+  become: true
+  roles:
+    - file_servers
